@@ -708,8 +708,7 @@ public class ClassFileImporterTest {
                 .getAnnotationOfType(SomeAnnotation.class.getName());
 
         assertThat(annotation.get("mandatory")).contains("mandatory");
-        // NOTE: If we haven't imported the annotation itself, the import can't determine default values
-        assertThat(annotation.get("optional")).isAbsent();
+        assertThat(annotation.get("optional")).contains("optional");
 
         SomeAnnotation reflected = annotation.as(SomeAnnotation.class);
         assertThat(reflected.mandatory()).isEqualTo("mandatory");
@@ -902,8 +901,7 @@ public class ClassFileImporterTest {
                 .getAnnotationOfType(SomeAnnotation.class.getName());
 
         assertThat(annotation.get("mandatory")).contains("mandatory");
-        // NOTE: If we haven't imported the annotation itself, the import can't determine default values
-        assertThat(annotation.get("optional")).isAbsent();
+        assertThat(annotation.get("optional")).contains("optional");
 
         SomeAnnotation reflected = annotation.as(SomeAnnotation.class);
         assertThat(reflected.mandatory()).isEqualTo("mandatory");
@@ -992,10 +990,9 @@ public class ClassFileImporterTest {
         JavaAnnotation<?> annotation = clazz.getAnnotationOfType(SomeAnnotation.class.getName());
 
         assertThat(annotation.get("mandatory")).contains("mandatory");
-        // NOTE: If we haven't imported the annotation itself, the import can't determine default values
-        assertThat(annotation.get("optional")).isAbsent();
+        assertThat(annotation.get("optional")).contains("optional");
         assertThat((JavaEnumConstant) annotation.get("mandatoryEnum").get()).isEquivalentTo(SOME_VALUE);
-        assertThat(annotation.get("optionalEnum")).isAbsent();
+        assertThat((JavaEnumConstant) annotation.get("optionalEnum").get()).isEquivalentTo(OTHER_VALUE);
 
         SomeAnnotation reflected = clazz.getAnnotationOfType(SomeAnnotation.class);
         assertThat(reflected.mandatory()).isEqualTo("mandatory");

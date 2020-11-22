@@ -1,5 +1,6 @@
 package com.tngtech.archunit.core.importer;
 
+
 import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.properties.HasAnnotations;
@@ -50,12 +51,14 @@ public class ClassFileImporterAnnotationsTest {
         JavaAnnotation<?> metaAnnotationWithParameters = someAnnotation.getRawType()
                 .getAnnotationOfType(MetaAnnotationWithParameters.class.getName());
 
-        assertThatAnnotation(metaAnnotationWithParameters)
-                .hasEnumProperty("someEnum", SomeEnum.CONSTANT)
+        assertThatAnnotation(metaAnnotationWithParameters).hasEnumProperty("someEnum", SomeEnum.CONSTANT)
+                .hasEnumDefaultValue("someEnum", SomeEnum.VARIABLE)
                 .hasAnnotationProperty("parameterAnnotation",
                         annotationProperty()
                                 .withAnnotationType(ParameterAnnotation.class)
-                                .withClassProperty("value", SomeAnnotationParameterType.class));
+                                .withClassProperty("value", SomeAnnotationParameterType.class))
+                .hasAnnotationDefaultValue("parameterAnnotation", ParameterAnnotation.class)
+                .hasClassProperty("value", Integer.class);
 
         JavaAnnotation<JavaClass> metaMetaMetaAnnotation = someAnnotation
                 .getRawType().getAnnotationOfType(SomeMetaAnnotation.class.getName())
@@ -65,24 +68,31 @@ public class ClassFileImporterAnnotationsTest {
         assertThatAnnotation(metaMetaMetaAnnotation)
                 .hasClassProperty("classParam", SomeMetaMetaMetaAnnotationClassParameter.class)
                 .hasEnumProperty("enumParam", SomeMetaMetaMetaAnnotationEnumParameter.VALUE)
+                .hasEnumDefaultValue("enumParam", SomeMetaMetaMetaAnnotationEnumParameter.CONSTANT)
+                .hasClassDefaultValue("classParam", String.class)
                 .hasAnnotationProperty("annotationParam",
                         annotationProperty()
                                 .withAnnotationType(SomeMetaMetaMetaParameterAnnotation.class)
                                 .withClassProperty("value", SomeMetaMetaMetaParameterAnnotationClassParameter.class));
+
+        assertThatAnnotation(metaMetaMetaAnnotation)
+                .hasAnnotationDefaultValue("annotationParam", SomeMetaMetaMetaParameterAnnotation.class)
+                .hasClassProperty("value", Boolean.class);
+
     }
 
     private @interface MetaAnnotationWithParameters {
-        SomeEnum someEnum();
+        SomeEnum someEnum() default SomeEnum.VARIABLE;
 
-        ParameterAnnotation parameterAnnotation();
+        ParameterAnnotation parameterAnnotation() default @ParameterAnnotation(value = Integer.class);
     }
 
     private @interface SomeMetaMetaMetaAnnotationWithParameters {
-        Class<?> classParam();
+        Class<?> classParam() default String.class;
 
-        SomeMetaMetaMetaAnnotationEnumParameter enumParam();
+        SomeMetaMetaMetaAnnotationEnumParameter enumParam() default SomeMetaMetaMetaAnnotationEnumParameter.CONSTANT;
 
-        SomeMetaMetaMetaParameterAnnotation annotationParam();
+        SomeMetaMetaMetaParameterAnnotation annotationParam() default @SomeMetaMetaMetaParameterAnnotation(value = Boolean.class);
     }
 
     @SomeMetaMetaMetaAnnotationWithParameters(
@@ -145,7 +155,8 @@ public class ClassFileImporterAnnotationsTest {
     }
 
     private enum SomeMetaMetaMetaAnnotationEnumParameter {
-        VALUE
+        VALUE,
+        CONSTANT
     }
 
     private @interface SomeMetaMetaMetaParameterAnnotation {
