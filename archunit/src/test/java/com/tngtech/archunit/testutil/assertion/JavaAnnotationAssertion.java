@@ -58,38 +58,12 @@ public class JavaAnnotationAssertion extends AbstractObjectAssert<JavaAnnotation
         return this;
     }
 
-    public JavaAnnotationAssertion hasEnumDefaultValue(String propertyName, Enum<?> expectedDefaultEnumValue) {
-        JavaEnumConstant acutalDefaultEnumValue = getDefaultValueOfType(propertyName, JavaEnumConstant.class);
-        assertThat(acutalDefaultEnumValue).isEquivalentTo(expectedDefaultEnumValue);
-        return this;
-    }
-
-    public JavaAnnotationAssertion hasClassDefaultValue(String propertyName, Class<?> expectedDefaultClass) {
-        JavaClass actualDefaultClassValue = getDefaultValueOfType(propertyName, JavaClass.class);
-        assertThatType(actualDefaultClassValue).matches(expectedDefaultClass);
-        return this;
-    }
-
-    public JavaAnnotationAssertion hasAnnotationDefaultValue(String propertyName, Class<? extends Annotation> expectedAnnotationType) {
-        JavaAnnotation<?> actualAnnotationDefaultType = getDefaultValueOfType(propertyName, JavaAnnotation.class);
-        assertThatType(actualAnnotationDefaultType.getType()).matches(expectedAnnotationType);
-        return new JavaAnnotationAssertion(actualAnnotationDefaultType);
-    }
-
     @SuppressWarnings("unchecked")
     private <T> T getPropertyOfType(String propertyName, Class<T> propertyType) {
         Optional<?> property = actual.get(propertyName);
-        assertThat(property).as("property '%s'", property).isPresent();
-        assertThat(property.get()).as("property '%s'", property).isInstanceOf(propertyType);
+        assertThat(property).as("property '%s'", propertyName).isPresent();
+        assertThat(property.get()).as("property '%s'", propertyName).isInstanceOf(propertyType);
         return (T) property.get();
-    }
-
-    private <T> T getDefaultValueOfType(String propertyName, Class<T> propertyType) {
-        Optional<?> defaultValue = actual.getRawType().getMethod(propertyName).getDefaultValue();
-        assertThat(defaultValue).as("defaultValue '%s'", defaultValue).isPresent();
-        assertThat(defaultValue.get()).as("defaultValue '%s'", defaultValue).isInstanceOf(propertyType);
-        return (T) defaultValue.get();
-
     }
 
     private String context() {
