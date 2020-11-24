@@ -144,7 +144,7 @@ class ClassFileImportRecord {
         return annotationsByOwner.get(owner.getName());
     }
 
-    public Set<DomainBuilders.JavaAnnotationBuilder> getAnnotationsFor(JavaMember owner) {
+    Set<DomainBuilders.JavaAnnotationBuilder> getAnnotationsFor(JavaMember owner) {
         return annotationsByOwner.get(getMemberKey(owner));
     }
 

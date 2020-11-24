@@ -379,11 +379,6 @@ public class ImportTestUtils {
         }
 
         @Override
-        public Optional<Object> createAnnotationDefaultValue(JavaMethod javaMethod) {
-            return Optional.absent();
-        }
-
-        @Override
         public Optional<JavaClass> createEnclosingClass(JavaClass owner) {
             return Optional.absent();
         }

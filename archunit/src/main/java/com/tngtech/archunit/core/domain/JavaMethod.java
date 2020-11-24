@@ -23,6 +23,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.tngtech.archunit.PublicAPI;
 import com.tngtech.archunit.base.ArchUnitException.InconsistentClassPathException;
+import com.tngtech.archunit.base.Function;
 import com.tngtech.archunit.base.Optional;
 import com.tngtech.archunit.core.MayResolveTypesViaReflection;
 import com.tngtech.archunit.core.ResolvesTypesViaReflection;
@@ -36,12 +37,13 @@ public class JavaMethod extends JavaCodeUnit {
     private final Supplier<Method> methodSupplier;
     private final ThrowsClause<JavaMethod> throwsClause;
     private Supplier<Set<JavaMethodCall>> callsToSelf = Suppliers.ofInstance(Collections.<JavaMethodCall>emptySet());
-    private Optional<Object> annotationDefaultValue = Optional.absent();
+    private final Optional<Object> annotationDefaultValue;
 
-    JavaMethod(DomainBuilders.JavaMethodBuilder builder) {
+    JavaMethod(DomainBuilders.JavaMethodBuilder builder, Function<JavaMethod, Optional<Object>> createAnnotationDefaultValue) {
         super(builder);
         throwsClause = builder.getThrowsClause(this);
         methodSupplier = Suppliers.memoize(new ReflectMethodSupplier());
+        annotationDefaultValue = createAnnotationDefaultValue.apply(this);
     }
 
     @Override
@@ -103,10 +105,6 @@ public class JavaMethod extends JavaCodeUnit {
     @PublicAPI(usage = ACCESS)
     public String getDescription() {
         return "Method <" + getFullName() + ">";
-    }
-
-    void completeAnnotationDefaultValues(ImportContext context) {
-        annotationDefaultValue = context.createAnnotationDefaultValue(this);
     }
 
     void registerCallsToMethod(Supplier<Set<JavaMethodCall>> calls) {

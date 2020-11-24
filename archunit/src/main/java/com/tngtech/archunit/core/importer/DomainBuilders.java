@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.tngtech.archunit.Internal;
+import com.tngtech.archunit.base.Function;
 import com.tngtech.archunit.base.HasDescription;
 import com.tngtech.archunit.base.Optional;
 import com.tngtech.archunit.core.domain.AccessTarget;
@@ -272,12 +273,24 @@ public final class DomainBuilders {
 
     @Internal
     public static final class JavaMethodBuilder extends JavaCodeUnitBuilder<JavaMethod, JavaMethodBuilder> {
+        private static final Function<JavaMethod, Optional<Object>> NO_ANNOTATION_DEFAULT_VALUE = new Function<JavaMethod, Optional<Object>>() {
+            @Override
+            public Optional<Object> apply(JavaMethod input) {
+                return Optional.absent();
+            }
+        };
+        private Function<JavaMethod, Optional<Object>> createAnnotationDefaultValue = NO_ANNOTATION_DEFAULT_VALUE;
+
         JavaMethodBuilder() {
+        }
+
+        void withAnnotationDefaultValue(Function<JavaMethod, Optional<Object>> createAnnotationDefaultValue) {
+            this.createAnnotationDefaultValue = createAnnotationDefaultValue;
         }
 
         @Override
         JavaMethod construct(JavaMethodBuilder builder, final ClassesByTypeName importedClasses) {
-            return DomainObjectCreationContext.createJavaMethod(builder);
+            return DomainObjectCreationContext.createJavaMethod(builder, createAnnotationDefaultValue);
         }
     }
 

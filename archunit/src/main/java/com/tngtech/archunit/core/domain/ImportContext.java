@@ -42,8 +42,6 @@ public interface ImportContext {
 
     Map<String, JavaAnnotation<JavaMember>> createAnnotations(JavaMember owner);
 
-    Optional<Object> createAnnotationDefaultValue(JavaMethod javaMethod);
-
     Optional<JavaClass> createEnclosingClass(JavaClass owner);
 
     Set<JavaFieldAccess> getFieldAccessesFor(JavaCodeUnit codeUnit);

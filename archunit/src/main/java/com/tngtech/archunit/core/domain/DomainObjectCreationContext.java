@@ -94,10 +94,6 @@ public class DomainObjectCreationContext {
         javaClass.completeAnnotations(importContext);
     }
 
-    public static void completeAnnotationDefaultValues(JavaMethod method, ImportContext importContext) {
-        method.completeAnnotationDefaultValues(importContext);
-    }
-
     public static <T extends HasDescription> JavaAnnotation<T> createJavaAnnotation(T owner, JavaAnnotationBuilder builder) {
         return new JavaAnnotation<>(owner, builder);
     }
@@ -130,8 +126,8 @@ public class DomainObjectCreationContext {
         return new AccessTarget.ConstructorCallTarget(builder);
     }
 
-    public static JavaMethod createJavaMethod(JavaMethodBuilder builder) {
-        return new JavaMethod(builder);
+    public static JavaMethod createJavaMethod(JavaMethodBuilder builder, Function<JavaMethod, Optional<Object>> createAnnotationDefaultValue) {
+        return new JavaMethod(builder, createAnnotationDefaultValue);
     }
 
     public static JavaMethodCall createJavaMethodCall(JavaMethodCallBuilder builder) {
